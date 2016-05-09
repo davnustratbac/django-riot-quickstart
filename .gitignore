@@ -1,0 +1,5 @@
+__pycache__/
+*.py[cod]
+environment.cfg
+deploy.cfg
+node_modules

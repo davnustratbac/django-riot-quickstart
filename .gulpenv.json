@@ -1,0 +1,9 @@
+{
+	"SASS_DIR": "./assets/sass",
+	"JS_DIR": "./assets/js",
+	"MAIN_SASS_FILE_NAME": "main",
+	"MAIN_JS_FILE_NAME": "main",
+	"JS_NO_BROWSERIFY_SUFFIX": "nb",
+	"MINIFIED_CSS_SUFFIX": "min",
+	"MINIFIED_JS_SUFFIX": "min"
+}
