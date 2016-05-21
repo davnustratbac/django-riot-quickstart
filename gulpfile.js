@@ -26,7 +26,7 @@ function DjangoFilePathParts(file) {
 		destModule = trimmed.slice(0, trimmed.indexOf('/')),
 		destFolder = (extension === 'js' ? 'js' : 'css');
 
-	this.baseName = trimmed.slice(trimmed.indexOf('/') + 1, trimmed.lastIndexOf('/'));
+	this.baseName = trimmed.slice(trimmed.indexOf('/') + 1, trimmed.lastIndexOf('.'));
 	this.directory = file.slice(0, file.lastIndexOf('/'));
 	this.destPath = './' + destModule + '/static/' + destModule + '/' + destFolder + '/';
 }
@@ -50,6 +50,7 @@ gulp.task('sass:compile', function (done) {
 				.pipe(autoprefixer('last 2 version'))
 				.pipe(gulp.dest(filePathParts.destPath))
 				.pipe(rename({
+					dirname: './',
 					basename: filePathParts.baseName,
 					suffix: '.' + process.env.MINIFIED_CSS_SUFFIX
 				}))
@@ -90,7 +91,7 @@ gulp.task('js:test', ['js:lint'], function (done) {
  * http://fettblog.eu/gulp-browserify-multiple-bundles/
  * to get multiple groups of files browserifying at the same time.
  */
-gulp.task('js:compile', ['js:test', 'js:move'], function (done) {
+gulp.task('js:compile', ['js:test'], function (done) {
 	var tasks = [];
 
 	var browerifyJSFilesPath = process.env.JS_DIR + '/**/' + process.env.MAIN_JS_FILE_NAME + '.js';
@@ -111,6 +112,7 @@ gulp.task('js:compile', ['js:test', 'js:move'], function (done) {
 				.pipe(uglify())
 				.on('error', log)
 				.pipe(rename({
+					dirname: './',
 					suffix: process.env.MINIFIED_JS_SUFFIX,
 					basename: filePathParts.baseName,
 					extname: '.js'
@@ -134,6 +136,7 @@ gulp.task('js:compile', ['js:test', 'js:move'], function (done) {
 				.pipe(uglify())
 				.on('error', log)
 				.pipe(rename({
+					dirname: './',
 					suffix: process.env.MINIFIED_JS_SUFFIX,
 					basename: filePathParts.baseName,
 					extname: '.js'
