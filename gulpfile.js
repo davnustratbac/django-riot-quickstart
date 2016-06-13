@@ -34,13 +34,12 @@ function DjangoFilePathParts(file) {
 env({file: '.gulpenv.json'});
 
 gulp.task('sass:compile', function (done) {
-	var tasks = [];
-
 	var sassPath = process.env.SASS_DIR + '/**/' + process.env.MAIN_SASS_FILE_NAME + '.scss';
+	
 	glob(sassPath, function(error, files) {
 		if (error) { done(error); }
 
-		tasks.concat(files.map(function(file){
+		var tasks = files.map(function(file){
 			var filePathParts = new DjangoFilePathParts(file);
 
 			return gulp.src(file)
@@ -56,11 +55,10 @@ gulp.task('sass:compile', function (done) {
 				}))
 				.pipe(minifycss())
 				.pipe(gulp.dest(filePathParts.destPath));
-			})
-		);
-	});
+		});
 
-	es.merge(tasks).on('end', done);
+		es.merge(tasks).on('end', done);
+	});
 });
 
 gulp.task('js:lint', function(){
@@ -92,13 +90,12 @@ gulp.task('js:test', ['js:lint'], function (done) {
  * to get multiple groups of files browserifying at the same time.
  */
 gulp.task('js:compile', ['js:test'], function (done) {
-	var tasks = [];
 
 	var browerifyJSFilesPath = process.env.JS_DIR + '/**/' + process.env.MAIN_JS_FILE_NAME + '.js';
 	glob(browerifyJSFilesPath, function(error, files) {
 		if (error) { done(error); }
 
-		tasks.concat(files.map(function(file){
+		var tasks = files.map(function(file){
 			var filePathParts = new DjangoFilePathParts(file);
 
 			return browserify({
@@ -119,35 +116,10 @@ gulp.task('js:compile', ['js:test'], function (done) {
 				}))
 				.pipe(sourcemaps.write('./'))
 				.pipe(gulp.dest(filePathParts.destPath));
-			})
-		);
+		});
+
+		es.merge(tasks).on('end', done);
 	});
-
-	var nonBrowerifyJSFilesPath = process.env.JS_DIR + '/**/' + process.env.MAIN_JS_FILE_NAME + '.' + process.env.JS_NO_BROWSERIFY_SUFFIX + '.js';
-	glob(nonBrowerifyJSFilesPath, function(error, files) {
-		if (error) { done(error); }
-
-		tasks.concat(files.map(function(file){
-			var filePathParts = new DjangoFilePathParts(file);
-				
-			return gulp.src(filePathParts.directory + '/*.js')
-				.pipe(sourcemaps.init({loadMaps: true}))
-				.pipe(concat(filePathParts.baseName + '.js'))
-				.pipe(uglify())
-				.on('error', log)
-				.pipe(rename({
-					dirname: './',
-					suffix: process.env.MINIFIED_JS_SUFFIX,
-					basename: filePathParts.baseName,
-					extname: '.js'
-				}))
-				.pipe(sourcemaps.write('./'))
-				.pipe(gulp.dest(filePathParts.destPath));
-			})
-		);
-	});
-
-	es.merge(tasks).on('end', done);
 });
 
 gulp.task('js:watch', function(){
